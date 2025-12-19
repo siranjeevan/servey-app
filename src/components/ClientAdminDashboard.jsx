@@ -12,6 +12,7 @@ export default function ClientAdminDashboard() {
   const [newPerson, setNewPerson] = useState({ name: '', email: '' })
   const [newQuestion, setNewQuestion] = useState({ text: '', type: 'text', options: '' })
   const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('overview')
 
   const surveyPersons = getClientSurveyPersons(currentUser.id)
   const questions = getClientQuestions(currentUser.id)
@@ -45,136 +46,253 @@ export default function ClientAdminDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-8">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-slate-800 mb-2">
-          Client Admin Dashboard
-        </h2>
-        <p className="text-slate-600 text-lg">Manage survey personnel and create questionnaires</p>
-        <div className="w-24 h-1 bg-indigo-500 mx-auto mt-4 rounded-full"></div>
+    <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">Organization Dashboard</h1>
+            <p className="text-slate-600 mt-2 text-lg">Manage survey personnel and questionnaires</p>
+          </div>
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 px-6 py-3 rounded-xl">
+            <span className="text-sm font-bold text-amber-800 uppercase tracking-wide">Client Admin Access</span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        <Card className="shadow-xl border-0 bg-white">
-          <CardHeader className="bg-emerald-600 text-white py-6">
-            <CardTitle className="text-xl font-semibold">Add Survey Personnel</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="person-name" className="text-slate-700 font-semibold text-sm uppercase tracking-wide">Full Name</Label>
-              <Input
-                id="person-name"
-                value={newPerson.name}
-                onChange={(e) => setNewPerson({ ...newPerson, name: e.target.value })}
-                placeholder="Enter full name"
-                className="h-12 border-2 border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
-              />
-            </div>
-            <div className="space-y-3">
-              <Label htmlFor="person-email" className="text-slate-700 font-semibold text-sm uppercase tracking-wide">Email Address</Label>
-              <Input
-                id="person-email"
-                type="email"
-                value={newPerson.email}
-                onChange={(e) => setNewPerson({ ...newPerson, email: e.target.value })}
-                placeholder="Enter email address"
-                className="h-12 border-2 border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
-              />
-            </div>
-            <Button 
-              onClick={handleAddSurveyPerson} 
-              disabled={!newPerson.name || !newPerson.email || isLoading}
-              className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+      {/* Navigation Tabs */}
+      <div className="mb-8">
+        <nav className="flex space-x-8">
+          {[
+            { id: 'overview', name: 'Overview', icon: '📊' },
+            { id: 'personnel', name: 'Personnel', icon: '👥' },
+            { id: 'questions', name: 'Questions', icon: '❓' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
             >
-              {isLoading ? 'Creating Account...' : 'Create Survey Account'}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xl border-0 bg-white">
-          <CardHeader className="bg-violet-600 text-white py-6">
-            <CardTitle className="text-xl font-semibold">Create Survey Question</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="question-text" className="text-slate-700 font-semibold text-sm uppercase tracking-wide">Question Text</Label>
-              <Textarea
-                id="question-text"
-                value={newQuestion.text}
-                onChange={(e) => setNewQuestion({ ...newQuestion, text: e.target.value })}
-                placeholder="Enter your survey question here..."
-                rows={4}
-                className="border-2 border-slate-200 focus:border-violet-500 focus:ring-violet-500 rounded-lg resize-none"
-              />
-            </div>
-            <div className="space-y-3">
-              <Label htmlFor="question-type" className="text-slate-700 font-semibold text-sm uppercase tracking-wide">Response Type</Label>
-              <Select value={newQuestion.type} onValueChange={(value) => setNewQuestion({ ...newQuestion, type: value, options: '' })}>
-                <SelectTrigger className="h-12 border-2 border-slate-200 focus:border-violet-500 rounded-lg">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="text">Text Response</SelectItem>
-                  <SelectItem value="options">Multiple Choice</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {newQuestion.type === 'options' && (
-              <div className="space-y-3">
-                <Label htmlFor="question-options" className="text-slate-700 font-semibold text-sm uppercase tracking-wide">Answer Options</Label>
-                <Input
-                  id="question-options"
-                  value={newQuestion.options}
-                  onChange={(e) => setNewQuestion({ ...newQuestion, options: e.target.value })}
-                  placeholder="Option 1, Option 2, Option 3"
-                  className="h-12 border-2 border-slate-200 focus:border-violet-500 focus:ring-violet-500 rounded-lg"
-                />
-              </div>
-            )}
-            <Button 
-              onClick={handleAddQuestion} 
-              disabled={!newQuestion.text || isLoading}
-              className="w-full h-12 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              {isLoading ? 'Adding Question...' : 'Add Question'}
-            </Button>
-          </CardContent>
-        </Card>
+              <span>{tab.icon}</span>
+              <span>{tab.name}</span>
+            </button>
+          ))}
+        </nav>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        <Card className="shadow-xl border-0 bg-white">
-          <CardHeader className="bg-slate-100 border-b-2 border-slate-200 py-6">
-            <CardTitle className="text-xl font-semibold text-slate-800">Survey Personnel ({surveyPersons.length})</CardTitle>
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
+        <div className="space-y-8">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <span className="text-blue-600 text-xl">👥</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Survey Personnel</p>
+                    <p className="text-2xl font-bold text-gray-900">{surveyPersons.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <span className="text-purple-600 text-xl">❓</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Survey Questions</p>
+                    <p className="text-2xl font-bold text-gray-900">{questions.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <span className="text-green-600 text-xl">📝</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Text Questions</p>
+                    <p className="text-2xl font-bold text-gray-900">{questions.filter(q => q.type === 'text').length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <span className="text-orange-600 text-xl">📋</span>
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Choice Questions</p>
+                    <p className="text-2xl font-bold text-gray-900">{questions.filter(q => q.type === 'options').length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="grid lg:grid-cols-2 gap-8">
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardHeader className="border-b border-gray-200 bg-gray-50">
+                <CardTitle className="text-lg font-semibold text-gray-900">Add Survey Personnel</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="person-name" className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name
+                    </Label>
+                    <Input
+                      id="person-name"
+                      value={newPerson.name}
+                      onChange={(e) => setNewPerson({ ...newPerson, name: e.target.value })}
+                      placeholder="Enter full name"
+                      className="w-full h-10 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="person-email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="person-email"
+                      type="email"
+                      value={newPerson.email}
+                      onChange={(e) => setNewPerson({ ...newPerson, email: e.target.value })}
+                      placeholder="person@email.com"
+                      className="w-full h-10 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleAddSurveyPerson} 
+                    disabled={!newPerson.name || !newPerson.email || isLoading}
+                    className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+                  >
+                    {isLoading ? 'Adding...' : 'Add Personnel'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white shadow-sm border border-gray-200">
+              <CardHeader className="border-b border-gray-200 bg-gray-50">
+                <CardTitle className="text-lg font-semibold text-gray-900">Create Survey Question</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="question-text" className="block text-sm font-medium text-gray-700 mb-2">
+                      Question Text
+                    </Label>
+                    <Textarea
+                      id="question-text"
+                      value={newQuestion.text}
+                      onChange={(e) => setNewQuestion({ ...newQuestion, text: e.target.value })}
+                      placeholder="Enter your survey question..."
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="question-type" className="block text-sm font-medium text-gray-700 mb-2">
+                      Response Type
+                    </Label>
+                    <Select value={newQuestion.type} onValueChange={(value) => setNewQuestion({ ...newQuestion, type: value, options: '' })}>
+                      <SelectTrigger className="w-full h-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="text">Text Response</SelectItem>
+                        <SelectItem value="options">Multiple Choice</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {newQuestion.type === 'options' && (
+                    <div>
+                      <Label htmlFor="question-options" className="block text-sm font-medium text-gray-700 mb-2">
+                        Answer Options (comma-separated)
+                      </Label>
+                      <Input
+                        id="question-options"
+                        value={newQuestion.options}
+                        onChange={(e) => setNewQuestion({ ...newQuestion, options: e.target.value })}
+                        placeholder="Option 1, Option 2, Option 3"
+                        className="w-full h-10 px-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  )}
+                  <Button 
+                    onClick={handleAddQuestion} 
+                    disabled={!newQuestion.text || isLoading}
+                    className="w-full h-10 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md transition-colors"
+                  >
+                    {isLoading ? 'Adding...' : 'Add Question'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Personnel Tab */}
+      {activeTab === 'personnel' && (
+        <Card className="bg-white shadow-sm border border-gray-200">
+          <CardHeader className="border-b border-gray-200 bg-gray-50">
+            <CardTitle className="text-lg font-semibold text-gray-900">
+              Survey Personnel ({surveyPersons.length})
+            </CardTitle>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-0">
             {surveyPersons.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-slate-400">👤</span>
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-gray-400 text-2xl">👥</span>
                 </div>
-                <p className="text-slate-500 font-medium text-lg">No personnel yet</p>
-                <p className="text-sm text-slate-400 mt-2">Add survey personnel to get started</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No personnel added yet</h3>
+                <p className="text-gray-500">Add survey personnel to start collecting responses.</p>
               </div>
             ) : (
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="divide-y divide-gray-200">
                 {surveyPersons.map((person) => (
-                  <div key={person.id} className="p-5 border-2 border-slate-100 rounded-xl bg-slate-50 hover:bg-slate-100 hover:border-slate-200 transition-all duration-200">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center shadow-md">
-                          <span className="text-white font-bold text-lg">{person.name.charAt(0)}</span>
+                  <div key={person.id} className="p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                          <span className="text-white font-semibold text-lg">
+                            {person.name.charAt(0).toUpperCase()}
+                          </span>
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-800 text-lg">{person.name}</div>
-                          <div className="text-emerald-600 font-medium">{person.email}</div>
-                          <div className="text-xs text-slate-500 mt-2 bg-white px-2 py-1 rounded">
-                            Created: {new Date(person.createdAt).toLocaleDateString()}
-                          </div>
+                          <h3 className="text-lg font-semibold text-gray-900">{person.name}</h3>
+                          <p className="text-sm text-gray-600">{person.email}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Added on {new Date(person.createdAt).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </p>
                         </div>
                       </div>
-                      <span className="px-3 py-2 bg-emerald-100 text-emerald-800 text-sm font-semibold rounded-lg">
-                        Survey Person
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Survey Personnel
                       </span>
                     </div>
                   </div>
@@ -183,53 +301,70 @@ export default function ClientAdminDashboard() {
             )}
           </CardContent>
         </Card>
+      )}
 
-        <Card className="shadow-xl border-0 bg-white">
-          <CardHeader className="bg-slate-100 border-b-2 border-slate-200 py-6">
-            <CardTitle className="text-xl font-semibold text-slate-800">Survey Questions ({questions.length})</CardTitle>
+      {/* Questions Tab */}
+      {activeTab === 'questions' && (
+        <Card className="bg-white shadow-sm border border-gray-200">
+          <CardHeader className="border-b border-gray-200 bg-gray-50">
+            <CardTitle className="text-lg font-semibold text-gray-900">
+              Survey Questions ({questions.length})
+            </CardTitle>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-0">
             {questions.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-slate-400">❓</span>
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-gray-400 text-2xl">❓</span>
                 </div>
-                <p className="text-slate-500 font-medium text-lg">No questions yet</p>
-                <p className="text-sm text-slate-400 mt-2">Create questions for your surveys</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No questions created yet</h3>
+                <p className="text-gray-500">Create survey questions to start collecting data.</p>
               </div>
             ) : (
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {questions.map((question) => (
-                  <div key={question.id} className="p-5 border-2 border-slate-100 rounded-xl bg-slate-50 hover:bg-slate-100 hover:border-slate-200 transition-all duration-200">
-                    <div className="font-semibold text-slate-800 text-lg mb-3">{question.text}</div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className={`px-3 py-2 text-sm font-semibold rounded-lg ${
-                        question.type === 'text' 
-                          ? 'bg-violet-100 text-violet-800' 
-                          : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        {question.type === 'text' ? 'Text Response' : 'Multiple Choice'}
-                      </span>
-                    </div>
-                    {question.options && question.options.length > 0 && (
-                      <div className="p-4 bg-white rounded-lg border-2 border-slate-100">
-                        <span className="font-semibold text-slate-700 text-sm block mb-2">Answer Options:</span>
-                        <div className="flex flex-wrap gap-2">
-                          {question.options.map((option, index) => (
-                            <span key={index} className="px-3 py-1 bg-slate-200 text-slate-700 text-sm rounded-full font-medium">
-                              {option}
-                            </span>
-                          ))}
-                        </div>
+              <div className="divide-y divide-gray-200">
+                {questions.map((question, index) => (
+                  <div key={question.id} className="p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-semibold text-sm">{index + 1}</span>
                       </div>
-                    )}
+                      <div className="flex-1">
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">{question.text}</h3>
+                        <div className="flex items-center space-x-4">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                            question.type === 'text' 
+                              ? 'bg-blue-100 text-blue-800' 
+                              : 'bg-orange-100 text-orange-800'
+                          }`}>
+                            {question.type === 'text' ? '📝 Text Response' : '📋 Multiple Choice'}
+                          </span>
+                          {question.options && question.options.length > 0 && (
+                            <span className="text-xs text-gray-500">
+                              {question.options.length} options
+                            </span>
+                          )}
+                        </div>
+                        {question.options && question.options.length > 0 && (
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                            <p className="text-xs font-medium text-gray-700 mb-2">Answer Options:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {question.options.map((option, optionIndex) => (
+                                <span key={optionIndex} className="inline-flex items-center px-2 py-1 rounded text-xs bg-white border border-gray-200 text-gray-700">
+                                  {option}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </CardContent>
         </Card>
-      </div>
+      )}
     </div>
   )
 }

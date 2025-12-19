@@ -23,92 +23,173 @@ export default function SuperAdminDashboard() {
   }
 
   return (
-    <div className="p-8 space-y-8">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-slate-800 mb-2">
-          Super Admin Dashboard
-        </h2>
-        <p className="text-slate-600 text-lg">Manage client accounts and system administration</p>
-        <div className="w-24 h-1 bg-indigo-500 mx-auto mt-4 rounded-full"></div>
+    <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">System Administration</h1>
+            <p className="text-slate-600 mt-2 text-lg">Manage client organizations and system settings</p>
+          </div>
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 px-6 py-3 rounded-xl">
+            <span className="text-sm font-bold text-amber-800 uppercase tracking-wide">Super Admin Access</span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        <Card className="shadow-xl border-0 bg-white">
-          <CardHeader className="bg-indigo-600 text-white py-6">
-            <CardTitle className="text-xl font-semibold">Create New Client</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="client-name" className="text-slate-700 font-semibold text-sm uppercase tracking-wide">Client Name</Label>
-              <Input
-                id="client-name"
-                value={newClient.name}
-                onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-                placeholder="Enter client organization name"
-                className="h-12 border-2 border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
-              />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white text-2xl">👥</span>
+              </div>
+              <div className="ml-5">
+                <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Total Clients</p>
+                <p className="text-3xl font-bold text-slate-800">{clients.length}</p>
+              </div>
             </div>
-            <div className="space-y-3">
-              <Label htmlFor="client-email" className="text-slate-700 font-semibold text-sm uppercase tracking-wide">Client Email</Label>
-              <Input
-                id="client-email"
-                type="email"
-                value={newClient.email}
-                onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                placeholder="Enter client admin email"
-                className="h-12 border-2 border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
-              />
-            </div>
-            <Button 
-              onClick={handleAddClient} 
-              disabled={!newClient.name || !newClient.email || isLoading}
-              className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              {isLoading ? 'Creating Account...' : 'Create Client Account'}
-            </Button>
           </CardContent>
         </Card>
-
-        <Card className="shadow-xl border-0 bg-white">
-          <CardHeader className="bg-slate-100 border-b-2 border-slate-200 py-6">
-            <CardTitle className="text-xl font-semibold text-slate-800">Active Clients ({clients.length})</CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            {clients.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-slate-400">👥</span>
-                </div>
-                <p className="text-slate-500 font-medium text-lg">No clients yet</p>
-                <p className="text-sm text-slate-400 mt-2">Create your first client account to get started</p>
+        
+        <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white text-2xl">✅</span>
               </div>
-            ) : (
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {clients.map((client) => (
-                  <div key={client.id} className="p-5 border-2 border-slate-100 rounded-xl bg-slate-50 hover:bg-slate-100 hover:border-slate-200 transition-all duration-200">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                          <span className="text-white font-bold text-lg">{client.name.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <div className="font-semibold text-slate-800 text-lg">{client.name}</div>
-                          <div className="text-indigo-600 font-medium">{client.email}</div>
-                          <div className="text-xs text-slate-500 mt-2 bg-white px-2 py-1 rounded">
-                            Created: {new Date(client.createdAt).toLocaleDateString()}
+              <div className="ml-5">
+                <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Active Organizations</p>
+                <p className="text-3xl font-bold text-slate-800">{clients.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-white shadow-lg border-0 hover:shadow-xl transition-shadow duration-200">
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <div className="w-14 h-14 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white text-2xl">📊</span>
+              </div>
+              <div className="ml-5">
+                <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">System Status</p>
+                <p className="text-xl font-bold text-green-600">Operational</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Content */}
+      <div className="grid lg:grid-cols-5 gap-8">
+        {/* Create Client Form */}
+        <div className="lg:col-span-2">
+          <Card className="bg-white shadow-xl border-0 hover:shadow-2xl transition-shadow duration-200">
+            <CardHeader className="border-b-2 border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <CardTitle className="text-xl font-bold text-slate-800">
+                Add New Client Organization
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8">
+              <form className="space-y-6">
+                <div>
+                  <Label htmlFor="client-name" className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">
+                    Organization Name
+                  </Label>
+                  <Input
+                    id="client-name"
+                    value={newClient.name}
+                    onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                    placeholder="Enter organization name"
+                    className="w-full h-12 px-4 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="client-email" className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">
+                    Administrator Email
+                  </Label>
+                  <Input
+                    id="client-email"
+                    type="email"
+                    value={newClient.email}
+                    onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                    placeholder="admin@organization.com"
+                    className="w-full h-12 px-4 border-2 border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  />
+                </div>
+                
+                <Button 
+                  type="button"
+                  onClick={handleAddClient} 
+                  disabled={!newClient.name || !newClient.email || isLoading}
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                >
+                  {isLoading ? 'Creating Organization...' : 'Create Client Organization'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Client List */}
+        <div className="lg:col-span-3">
+          <Card className="bg-white shadow-xl border-0 hover:shadow-2xl transition-shadow duration-200">
+            <CardHeader className="border-b-2 border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
+              <CardTitle className="text-xl font-bold text-slate-800">
+                Client Organizations ({clients.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              {clients.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <span className="text-slate-400 text-3xl">🏢</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-3">No client organizations yet</h3>
+                  <p className="text-slate-600">Create your first client organization to get started.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {clients.map((client) => (
+                    <div key={client.id} className="p-8 hover:bg-slate-50 transition-colors duration-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-5">
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <span className="text-white font-bold text-2xl">
+                              {client.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-slate-800">{client.name}</h3>
+                            <p className="text-sm text-slate-600 font-medium">{client.email}</p>
+                            <p className="text-xs text-slate-500 mt-2 bg-slate-100 px-3 py-1 rounded-full inline-block">
+                              Created on {new Date(client.createdAt).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
                           </div>
                         </div>
+                        <div className="flex items-center space-x-3">
+                          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-800 border border-green-200">
+                            Active
+                          </span>
+                          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            Client Admin
+                          </span>
+                        </div>
                       </div>
-                      <span className="px-3 py-2 bg-indigo-100 text-indigo-800 text-sm font-semibold rounded-lg">
-                        Client Admin
-                      </span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
